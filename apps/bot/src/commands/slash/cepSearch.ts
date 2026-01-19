@@ -7,10 +7,10 @@ import {
   SlashCommandBuilder,
 } from 'discord.js';
 import ky from 'ky';
-import config from '~/config';
 import { stripIndents } from 'common-tags';
 import { type } from 'arktype';
 import { ExpectedError } from '~/types/errors';
+import { env } from '@repo/env/bot';
 
 const CEP = type('string & /^\\d{5}-?\\d{3}$/');
 
@@ -69,7 +69,7 @@ export const command = <CommandInfer>{
       components: [
         {
           type: ComponentType.Container,
-          accent_color: config.EMBED_COLOR,
+          accent_color: env.EMBED_COLOR,
           components: [
             {
               type: ComponentType.TextDisplay,

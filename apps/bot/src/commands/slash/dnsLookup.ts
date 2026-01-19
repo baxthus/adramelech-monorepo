@@ -1,3 +1,4 @@
+import { env } from '@repo/env/bot';
 import {
   ComponentType,
   MessageFlags,
@@ -7,7 +8,6 @@ import {
 import ky from 'ky';
 import UnicodeSheet from '~/tools/UnicodeSheet';
 import type { CommandInfer } from '~/types/command';
-import config from '~/config';
 import { ExpectedError } from '~/types/errors';
 
 type DnsRecord = {
@@ -66,7 +66,7 @@ export const command = <CommandInfer>{
       components: [
         {
           type: ComponentType.Container,
-          accent_color: config.EMBED_COLOR,
+          accent_color: env.EMBED_COLOR,
           components: [
             {
               type: ComponentType.TextDisplay,

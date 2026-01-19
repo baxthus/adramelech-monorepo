@@ -8,8 +8,8 @@ import {
 } from 'discord.js';
 import type { CustomClient } from '~/index';
 import type { CommandInfer } from '~/types/command';
-import config from '~/config';
 import { stripIndents } from 'common-tags';
+import { env } from '@repo/env/bot';
 
 export const command = <CommandInfer>{
   data: new SlashCommandBuilder()
@@ -25,7 +25,7 @@ export const command = <CommandInfer>{
       components: [
         {
           type: ComponentType.Container,
-          accent_color: config.EMBED_COLOR,
+          accent_color: env.EMBED_COLOR,
           components: [
             {
               type: ComponentType.Section,
@@ -52,7 +52,7 @@ export const command = <CommandInfer>{
                   type: ComponentType.Button,
                   style: ButtonStyle.Link,
                   label: 'Repository',
-                  url: config.REPOSITORY_URL,
+                  url: env.REPOSITORY_URL,
                 },
               ],
             },
@@ -103,7 +103,7 @@ export const command = <CommandInfer>{
                   type: ComponentType.Button,
                   style: ButtonStyle.Link,
                   label: 'Website',
-                  url: config.AUTHOR_URL,
+                  url: env.AUTHOR_URL,
                 },
               ],
             },

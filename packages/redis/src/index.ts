@@ -1,10 +1,9 @@
 import { RedisClient } from 'bun';
+import { env } from '@repo/env/redis';
 
-if (!process.env.REDIS_URL)
-  throw new Error('REDIS_URL is not defined in environment variables');
-const redis = new RedisClient();
+const redis = new RedisClient(env.REDIS_URL);
 
-export const telemetryRedis = new RedisClient(process.env.ANALYTICS_REDIS_URL, {
+export const telemetryRedis = new RedisClient(env.TELEMETRY_REDIS_URL, {
   maxRetries: 0,
 });
 

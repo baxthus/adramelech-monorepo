@@ -10,7 +10,6 @@ import {
   type CommandExecutors,
   type CommandInfer,
 } from '~/types/command';
-import config from '~/config';
 import { stripIndents } from 'common-tags';
 import v from 'voca';
 import { UIBuilder } from '~/services/UIBuilder';
@@ -21,6 +20,7 @@ import { db } from '@repo/database';
 import { exists } from '@repo/database/utils';
 import { toUnixTimestamp } from '@repo/utils/date';
 import { ExpectedError } from '~/types/errors';
+import { env } from '@repo/env/bot';
 
 export const command = <CommandInfer>{
   data: new SlashCommandBuilder()
@@ -169,7 +169,7 @@ async function viewFeedback(intr: ChatInputCommandInteraction) {
     components: [
       {
         type: ComponentType.Container,
-        accent_color: config.EMBED_COLOR,
+        accent_color: env.EMBED_COLOR,
         components: [
           {
             type: ComponentType.TextDisplay,

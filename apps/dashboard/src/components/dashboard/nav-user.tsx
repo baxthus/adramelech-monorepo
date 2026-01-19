@@ -31,7 +31,7 @@ import {
   User,
 } from 'lucide-react';
 import Link from 'next/link';
-import { env } from '@/env';
+import { env } from '@repo/env/dashboard';
 import { useTheme } from 'next-themes';
 
 const UserView = ({

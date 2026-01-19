@@ -1,8 +1,8 @@
 import { ComponentType, MessageFlags, SlashCommandBuilder } from 'discord.js';
 import ky from 'ky';
 import type { CommandInfer } from '~/types/command';
-import config from '~/config';
 import { type } from 'arktype';
+import { env } from '@repo/env/bot';
 
 const DogImage = type({
   status: '"success"',
@@ -28,7 +28,7 @@ export const command = <CommandInfer>{
       components: [
         {
           type: ComponentType.Container,
-          accent_color: config.EMBED_COLOR,
+          accent_color: env.EMBED_COLOR,
           components: [
             {
               type: ComponentType.MediaGallery,

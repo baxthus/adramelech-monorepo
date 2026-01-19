@@ -1,3 +1,4 @@
+import { env } from '@repo/env/bot';
 import { type } from 'arktype';
 import { stripIndents } from 'common-tags';
 import {
@@ -8,7 +9,6 @@ import {
   type ChatInputCommandInteraction,
 } from 'discord.js';
 import ky from 'ky';
-import config from '~/config';
 import type { CommandInfer } from '~/types/command';
 import { ExpectedError } from '~/types/errors';
 
@@ -67,7 +67,7 @@ export const command = <CommandInfer>{
   cooldown: 10 * 60, // 10 minutes
   uses: ['OpenWeatherMap'],
   async execute(intr: ChatInputCommandInteraction) {
-    if (!config.OPENWEATHER_KEY)
+    if (!env.OPENWEATHER_KEY)
       throw new ExpectedError('OpenWeatherMap API key is not configured');
 
     await intr.deferReply();
@@ -80,7 +80,7 @@ export const command = <CommandInfer>{
         searchParams: {
           q: `${city},${country}`,
           limit: '1',
-          appid: config.OPENWEATHER_KEY,
+          appid: env.OPENWEATHER_KEY,
         },
       })
       .json()
@@ -99,7 +99,7 @@ export const command = <CommandInfer>{
           lat: geo[0]!.lat,
           lon: geo[0]!.lon,
           units: 'metric',
-          appid: config.OPENWEATHER_KEY,
+          appid: env.OPENWEATHER_KEY,
           lang: 'en',
         },
       })
@@ -111,7 +111,7 @@ export const command = <CommandInfer>{
       components: [
         {
           type: ComponentType.Container,
-          accent_color: config.EMBED_COLOR,
+          accent_color: env.EMBED_COLOR,
           components: [
             {
               type: ComponentType.TextDisplay,

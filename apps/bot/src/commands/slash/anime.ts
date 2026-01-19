@@ -11,11 +11,11 @@ import {
   type CommandGroupExecutors,
   type CommandInfer,
 } from '~/types/command';
-import config from '~/config';
 import StringBuilder from '~/tools/StringBuilder';
 import { type } from 'arktype';
 import { capitalize } from '@repo/utils/text';
 import { ExpectedError } from '~/types/errors';
+import { env } from '@repo/env/bot';
 
 const AnimeImageRatings = [
   'safe',
@@ -99,7 +99,7 @@ async function animeImage(intr: ChatInputCommandInteraction) {
         limit: 1,
       },
       headers: {
-        'User-Agent': config.USER_AGENT,
+        'User-Agent': env.USER_AGENT,
       },
     })
     .json()
@@ -114,7 +114,7 @@ async function animeImage(intr: ChatInputCommandInteraction) {
     components: [
       {
         type: ComponentType.Container,
-        accent_color: config.EMBED_COLOR,
+        accent_color: env.EMBED_COLOR,
         components: [
           {
             type: ComponentType.MediaGallery,
@@ -149,7 +149,7 @@ async function nekoImage(intr: ChatInputCommandInteraction) {
     components: [
       {
         type: ComponentType.Container,
-        accent_color: config.EMBED_COLOR,
+        accent_color: env.EMBED_COLOR,
         components: [
           {
             type: ComponentType.MediaGallery,

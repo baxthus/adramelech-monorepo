@@ -13,7 +13,8 @@
   },
   "devDependencies": {
     "@repo/config": "workspace:*",
-    "@types/bun": "latest"
+    "@types/bun": "latest",
+    "@repo/env": "workspace:*"
   },
   "peerDependencies": {
     "typescript": "^5"

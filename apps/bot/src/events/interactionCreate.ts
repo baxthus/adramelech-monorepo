@@ -17,7 +17,6 @@ import type { CustomClient } from '..';
 import type { CommandInfer } from '~/types/command';
 import type { ComponentInfer } from '~/types/component';
 import type { ModalInfer } from '~/types/modal';
-import config from '~/config';
 import type { EventInfer } from '~/types/event';
 import redis from '@repo/redis';
 import { formatDistanceToNow } from 'date-fns';
@@ -29,6 +28,7 @@ import {
 } from '@repo/redis/telemetry';
 import { fireAndForget } from '@repo/utils/async';
 import { Result } from 'better-result';
+import { env } from '@repo/env/bot';
 
 export type CommandInteraction =
   | ChatInputCommandInteraction
@@ -228,7 +228,7 @@ async function isOnCooldown(
 
   const cooldownSeconds =
     typeof item.cooldown === 'boolean'
-      ? config.DEFAULT_COOLDOWN_SECONDS
+      ? env.DEFAULT_COOLDOWN_SECONDS
       : item.cooldown;
 
   const expiration = Date.now() + cooldownSeconds * 1000;

@@ -6,9 +6,9 @@ import {
 } from 'discord.js';
 import ky from 'ky';
 import type { CommandInfer } from '~/types/command';
-import config from '~/config';
 import { stripIndents } from 'common-tags';
 import { ExpectedError } from '~/types/errors';
+import { env } from '@repo/env/bot';
 
 const badResponses = [
   'Malformed',
@@ -52,7 +52,7 @@ export const command = <CommandInfer>{
       components: [
         {
           type: ComponentType.Container,
-          accent_color: config.EMBED_COLOR,
+          accent_color: env.EMBED_COLOR,
           components: [
             {
               type: ComponentType.TextDisplay,

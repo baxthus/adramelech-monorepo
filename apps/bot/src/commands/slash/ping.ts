@@ -5,9 +5,9 @@ import {
   SlashCommandBuilder,
 } from 'discord.js';
 import type { CommandInfer } from '~/types/command';
-import config from '~/config';
 import type { ComponentInfer } from '~/types/component';
 import { stripIndents } from 'common-tags';
+import { env } from '@repo/env/bot';
 
 const createActionRow = (disabled: boolean = false) => ({
   type: ComponentType.ActionRow,
@@ -23,7 +23,7 @@ const createActionRow = (disabled: boolean = false) => ({
       type: ComponentType.Button,
       label: 'Author',
       style: ButtonStyle.Link,
-      url: config.AUTHOR_URL,
+      url: env.AUTHOR_URL,
     },
   ],
 });
@@ -38,7 +38,7 @@ export const command = <CommandInfer>{
       components: [
         {
           type: ComponentType.Container,
-          accent_color: config.EMBED_COLOR,
+          accent_color: env.EMBED_COLOR,
           components: [
             {
               type: ComponentType.TextDisplay,
@@ -62,7 +62,7 @@ export const component = <ComponentInfer>{
       components: [
         {
           type: ComponentType.Container,
-          accent_color: config.EMBED_COLOR,
+          accent_color: env.EMBED_COLOR,
           components: [
             {
               type: ComponentType.TextDisplay,

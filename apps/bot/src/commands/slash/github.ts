@@ -14,9 +14,9 @@ import {
   type CommandExecutors,
   type CommandInfer,
 } from '~/types/command';
-import config from '~/config';
 import { stripIndents } from 'common-tags';
 import { type, type Type } from 'arktype';
+import { env } from '@repo/env/bot';
 
 const BASE_URL = 'https://api.github.com';
 
@@ -124,7 +124,7 @@ async function repo(intr: ChatInputCommandInteraction) {
   const data = await fetchGitHubData(`/repos/${user}/${repo}`, Repository);
 
   const container = new ContainerBuilder({
-    accent_color: config.EMBED_COLOR,
+    accent_color: env.EMBED_COLOR,
     components: [
       {
         type: ComponentType.TextDisplay,
@@ -252,7 +252,7 @@ async function user(intr: ChatInputCommandInteraction) {
   }
 
   const container = new ContainerBuilder({
-    accent_color: config.EMBED_COLOR,
+    accent_color: env.EMBED_COLOR,
     components: [
       {
         type: ComponentType.TextDisplay,
@@ -331,7 +331,7 @@ const fetchGitHubData = <T extends Type>(
 ): Promise<T['infer']> =>
   ky
     .get(BASE_URL + endpoint, {
-      headers: { 'User-Agent': config.USER_AGENT },
+      headers: { 'User-Agent': env.USER_AGENT },
     })
     .json()
     .then(schema.assert);

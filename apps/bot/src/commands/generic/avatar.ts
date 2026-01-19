@@ -1,3 +1,4 @@
+import { env } from '@repo/env/bot';
 import {
   ApplicationCommandType,
   ButtonStyle,
@@ -10,7 +11,6 @@ import {
   type User,
   type UserContextMenuCommandInteraction,
 } from 'discord.js';
-import config from '~/config';
 import type { CommandInfer } from '~/types/command';
 
 export const commands = <Array<CommandInfer>>[
@@ -39,7 +39,7 @@ async function helper(interaction: CommandInteraction, user: User) {
     components: [
       {
         type: ComponentType.Container,
-        accent_color: config.EMBED_COLOR,
+        accent_color: env.EMBED_COLOR,
         components: [
           {
             type: ComponentType.TextDisplay,
