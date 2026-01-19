@@ -26,7 +26,7 @@
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
-    "@repo/typescript-config": "workspace:*",
+    "@repo/config": "workspace:*",
     "@types/bun": "latest",
     "@types/common-tags": "^1.8.4",
     "@types/node": "^24.3.0",

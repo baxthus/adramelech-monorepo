@@ -19,7 +19,7 @@ packages/
   redis/         # Redis client (@repo/redis)
   utils/         # Shared utilities (@repo/utils)
   eslint-config/ # Shared ESLint config (@repo/eslint-config)
-  typescript-config/ # Shared TypeScript config (@repo/typescript-config)
+  config/ # Shared TypeScript config (@repo/config)
 ```
 
 ## Code Style

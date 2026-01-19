@@ -20,7 +20,7 @@
     "infra:down": "podman-compose down"
   },
   "devDependencies": {
-    "@repo/typescript-config": "workspace:*",
+    "@repo/config": "workspace:*",
     "@types/bun": "latest",
     "@types/pg": "^8.16.0",
     "drizzle-kit": "^0.31.8"

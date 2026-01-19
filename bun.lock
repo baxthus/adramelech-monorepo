@@ -32,8 +32,8 @@
         "voca": "^1.4.1",
       },
       "devDependencies": {
+        "@repo/config": "workspace:*",
         "@repo/eslint-config": "workspace:*",
-        "@repo/typescript-config": "workspace:*",
         "@types/bun": "latest",
         "@types/common-tags": "^1.8.4",
         "@types/node": "^24.3.0",
@@ -71,8 +71,8 @@
         "tailwind-merge": "^3.3.1",
       },
       "devDependencies": {
+        "@repo/config": "workspace:*",
         "@repo/eslint-config": "workspace:*",
-        "@repo/typescript-config": "workspace:*",
         "@tailwindcss/postcss": "^4",
         "@types/node": "^20",
         "@types/react": "^19",
@@ -89,6 +89,10 @@
         "typescript": "^5",
       },
     },
+    "packages/config": {
+      "name": "@repo/config",
+      "version": "0.0.0",
+    },
     "packages/database": {
       "name": "@repo/database",
       "dependencies": {
@@ -96,7 +100,7 @@
         "pg": "^8.16.3",
       },
       "devDependencies": {
-        "@repo/typescript-config": "workspace:*",
+        "@repo/config": "workspace:*",
         "@types/bun": "latest",
         "@types/pg": "^8.16.0",
         "drizzle-kit": "^0.31.8",
@@ -121,21 +125,17 @@
     "packages/redis": {
       "name": "@repo/redis",
       "devDependencies": {
-        "@repo/typescript-config": "workspace:*",
+        "@repo/config": "workspace:*",
         "@types/bun": "latest",
       },
       "peerDependencies": {
         "typescript": "^5",
       },
     },
-    "packages/typescript-config": {
-      "name": "@repo/typescript-config",
-      "version": "0.0.0",
-    },
     "packages/utils": {
       "name": "@repo/utils",
       "devDependencies": {
-        "@repo/typescript-config": "workspace:*",
+        "@repo/config": "workspace:*",
         "@types/bun": "latest",
       },
       "peerDependencies": {
@@ -526,6 +526,8 @@
 
     "@repo/bot": ["@repo/bot@workspace:apps/bot"],
 
+    "@repo/config": ["@repo/config@workspace:packages/config"],
+
     "@repo/dashboard": ["@repo/dashboard@workspace:apps/dashboard"],
 
     "@repo/database": ["@repo/database@workspace:packages/database"],
@@ -533,8 +535,6 @@
     "@repo/eslint-config": ["@repo/eslint-config@workspace:packages/eslint-config"],
 
     "@repo/redis": ["@repo/redis@workspace:packages/redis"],
-
-    "@repo/typescript-config": ["@repo/typescript-config@workspace:packages/typescript-config"],
 
     "@repo/utils": ["@repo/utils@workspace:packages/utils"],
 

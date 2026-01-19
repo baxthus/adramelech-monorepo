@@ -12,7 +12,7 @@
     "infra:down": "podman-compose down"
   },
   "devDependencies": {
-    "@repo/typescript-config": "workspace:*",
+    "@repo/config": "workspace:*",
     "@types/bun": "latest"
   },
   "peerDependencies": {
