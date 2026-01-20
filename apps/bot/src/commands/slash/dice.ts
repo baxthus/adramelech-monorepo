@@ -1,8 +1,9 @@
 import {
+  ComponentType,
+  MessageFlags,
   SlashCommandBuilder,
   type ChatInputCommandInteraction,
 } from 'discord.js';
-import { UIBuilder } from '~/services/UIBuilder';
 import type { CommandInfer } from '~/types/command';
 
 export const command = <CommandInfer>{
@@ -20,11 +21,20 @@ export const command = <CommandInfer>{
     const sides = intr.options.getInteger('sides') ?? 6;
     const result = Math.floor(Math.random() * sides) + 1;
 
-    await intr.reply(
-      UIBuilder.createGenericSuccess(
-        `# You rolled a ${result} on a ${sides}-sided dice`,
-        false,
-      ),
-    );
+    await intr.reply({
+      flags: MessageFlags.IsComponentsV2,
+      components: [
+        {
+          type: ComponentType.Container,
+          components: [
+            {
+              type: ComponentType.TextDisplay,
+
+              content: `# You rolled a ${result} on a ${sides}-sided dice`,
+            },
+          ],
+        },
+      ],
+    });
   },
 };

@@ -4,7 +4,6 @@ import { db } from '@repo/database';
 import { phrases } from '@repo/database/schema';
 import { sql } from 'drizzle-orm';
 import { ExpectedError } from '~/types/errors';
-import { env } from '@repo/env/bot';
 
 export const command = <CommandInfer>{
   data: new SlashCommandBuilder()
@@ -26,7 +25,6 @@ export const command = <CommandInfer>{
       components: [
         {
           type: ComponentType.Container,
-          accent_color: env.EMBED_COLOR,
           components: [
             {
               type: ComponentType.TextDisplay,

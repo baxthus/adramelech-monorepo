@@ -3,6 +3,7 @@ import {
   ActionRowBuilder,
   ApplicationCommandType,
   ButtonStyle,
+  Colors,
   ComponentType,
   ContextMenuCommandBuilder,
   MessageFlags,
@@ -32,7 +33,6 @@ import { exists } from '@repo/database/utils';
 import { toUnixTimestamp } from '@repo/utils/date';
 import { ArkErrors, type } from 'arktype';
 import { ExpectedError } from '~/types/errors';
-import { env } from '@repo/env/bot';
 
 export const commands = <CommandInfer[]>[
   {
@@ -205,7 +205,6 @@ async function viewProfile(intr: CommandInteraction, user: User) {
     components: [
       {
         type: ComponentType.Container,
-        accent_color: env.EMBED_COLOR,
         components: [
           {
             type: ComponentType.Section,
@@ -283,7 +282,7 @@ async function deleteProfile(intr: ChatInputCommandInteraction) {
     components: [
       {
         type: ComponentType.Container,
-        accent_color: env.EMBED_COLOR,
+        accent_color: Colors.Red,
         components: [
           {
             type: ComponentType.TextDisplay,

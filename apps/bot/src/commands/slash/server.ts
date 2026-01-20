@@ -9,7 +9,6 @@ import {
 import type { CommandInfer } from '~/types/command';
 import { stripIndents } from 'common-tags';
 import { toUnixTimestamp } from '@repo/utils/date';
-import { env } from '@repo/env/bot';
 
 export const command = <CommandInfer>{
   data: new SlashCommandBuilder()
@@ -25,7 +24,6 @@ export const command = <CommandInfer>{
       components: [
         {
           type: ComponentType.Container,
-          accent_color: env.EMBED_COLOR,
           components: [
             {
               type: ComponentType.Section,
@@ -47,7 +45,7 @@ export const command = <CommandInfer>{
                   ### **Boosts**
                   \`${intr.guild?.premiumSubscriptionCount} Boosts${intr.guild!.premiumTier > 0 ? ` ${intr.guild?.premiumTier}` : ''}\`
                   ### **Created At**
-                  \`${time(createdAt, TimestampStyles.LongDateTime)} (${time(createdAt, TimestampStyles.RelativeTime)})\`
+                  ${time(createdAt, TimestampStyles.LongDateTime)} (${time(createdAt, TimestampStyles.RelativeTime)})
                   ### Download the raw guild data below
                   `,
                 },

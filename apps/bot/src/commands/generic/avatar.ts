@@ -1,4 +1,3 @@
-import { env } from '@repo/env/bot';
 import {
   ApplicationCommandType,
   ButtonStyle,
@@ -39,7 +38,6 @@ async function helper(interaction: CommandInteraction, user: User) {
     components: [
       {
         type: ComponentType.Container,
-        accent_color: env.EMBED_COLOR,
         components: [
           {
             type: ComponentType.TextDisplay,

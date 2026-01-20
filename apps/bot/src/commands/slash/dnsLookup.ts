@@ -1,4 +1,3 @@
-import { env } from '@repo/env/bot';
 import {
   ComponentType,
   MessageFlags,
@@ -66,7 +65,6 @@ export const command = <CommandInfer>{
       components: [
         {
           type: ComponentType.Container,
-          accent_color: env.EMBED_COLOR,
           components: [
             {
               type: ComponentType.TextDisplay,

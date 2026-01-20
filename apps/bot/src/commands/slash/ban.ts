@@ -12,7 +12,6 @@ import {
 import { stripIndents } from 'common-tags';
 import { ExpectedError } from '~/types/errors';
 import { Result } from 'better-result';
-import { env } from '@repo/env/bot';
 
 export const command = <CommandInfer>{
   data: new SlashCommandBuilder()
@@ -72,7 +71,6 @@ export const command = <CommandInfer>{
       components: [
         {
           type: ComponentType.Container,
-          accent_color: env.EMBED_COLOR,
           components: [
             {
               type: ComponentType.TextDisplay,

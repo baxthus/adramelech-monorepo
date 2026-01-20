@@ -7,7 +7,6 @@ export const env = createEnv({
     BOT_ID: z.string(),
     PRESENCE_TYPE: z.coerce.number(),
     PRESENCE_NAME: z.string(),
-    EMBED_COLOR: z.coerce.number(),
     AUTHOR_URL: z.url().default('https://www.pudim.com.br'),
     REPOSITORY_URL: z.url(),
     DEFAULT_COOLDOWN_SECONDS: z.coerce.number().int().positive(),

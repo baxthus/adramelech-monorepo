@@ -2,7 +2,6 @@ import type { CommandInfer } from '~/types/command.ts';
 import { ComponentType, MessageFlags, SlashCommandBuilder } from 'discord.js';
 import ky from 'ky';
 import { type } from 'arktype';
-import { env } from '@repo/env/bot';
 
 const CatImages = type({
   url: 'string.url',
@@ -29,7 +28,6 @@ export const command = <CommandInfer>{
       components: [
         {
           type: ComponentType.Container,
-          accent_color: env.EMBED_COLOR,
           components: [
             {
               type: ComponentType.MediaGallery,

@@ -20,7 +20,6 @@ import {
 import type { CommandInfer } from '~/types/command';
 import { stripIndents } from 'common-tags';
 import { toUnixTimestamp } from '@repo/utils/date';
-import { env } from '@repo/env/bot';
 
 export const commands = <Array<CommandInfer>>[
   {
@@ -50,7 +49,6 @@ async function helper(intr: CommandInteraction, user: User) {
   const createdAt = toUnixTimestamp(user.createdTimestamp);
 
   const container = new ContainerBuilder({
-    accent_color: env.EMBED_COLOR,
     components: [
       {
         type: ComponentType.Section,

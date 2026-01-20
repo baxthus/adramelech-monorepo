@@ -13,7 +13,6 @@ import { stripIndents } from 'common-tags';
 import { type } from 'arktype';
 import { toUnixTimestamp } from '@repo/utils/date';
 import { ExpectedError } from '~/types/errors';
-import { env } from '@repo/env/bot';
 
 const Lookup = type({
   success: 'boolean',
@@ -23,8 +22,8 @@ const Lookup = type({
   country_code: 'string == 2',
   region: 'string',
   city: 'string',
-  latitude: 'number',
-  longitude: 'number',
+  latitude: type('number').pipe(String),
+  longitude: type('number').pipe(String),
   postal: 'string',
   connection: {
     asn: 'number',
@@ -62,20 +61,20 @@ export const command = <CommandInfer>{
         : target;
 
     const data = await ky
-      .get(`https://ipwhois.io/json/${ip}`)
+      .get(`https://ipwho.is/${ip}`)
       .json()
       .then(Lookup.assert);
 
-    const mapsUrl = new URL('https://www.google.com/maps/search/');
-    mapsUrl.searchParams.set('api', '1');
-    mapsUrl.searchParams.set('query', `${data.latitude},${data.longitude}`);
+    const mapsUrl = new URL('https://www.openstreetmap.org/');
+    mapsUrl.searchParams.set('mlat', data.latitude);
+    mapsUrl.searchParams.set('mlon', data.longitude);
+    mapsUrl.hash = `map=15/${data.latitude}/${data.longitude}`;
 
     await intr.followUp({
       flags: MessageFlags.IsComponentsV2,
       components: [
         {
           type: ComponentType.Container,
-          accent_color: env.EMBED_COLOR,
           components: [
             {
               type: ComponentType.TextDisplay,
@@ -106,7 +105,7 @@ export const command = <CommandInfer>{
                 {
                   type: ComponentType.Button,
                   style: ButtonStyle.Link,
-                  label: 'Open in Google Maps',
+                  label: 'Open in OpenStreetMap',
                   url: mapsUrl.toString(),
                   emoji: { name: '🌎' },
                 },

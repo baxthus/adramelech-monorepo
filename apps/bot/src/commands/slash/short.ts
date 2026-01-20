@@ -9,7 +9,6 @@ import type { CommandInfer } from '~/types/command';
 import { stripIndents } from 'common-tags';
 import { type } from 'arktype';
 import { ExpectedError } from '~/types/errors';
-import { env } from '@repo/env/bot';
 
 const OkResponse = type({
   shorturl: 'string.url',
@@ -60,7 +59,6 @@ export const command = <CommandInfer>{
       components: [
         {
           type: ComponentType.Container,
-          accent_color: env.EMBED_COLOR,
           components: [
             {
               type: ComponentType.TextDisplay,
@@ -69,6 +67,7 @@ export const command = <CommandInfer>{
               \`\`\`${url}\`\`\`
               `,
             },
+            { type: ComponentType.Separator, divider: false },
             {
               type: ComponentType.TextDisplay,
               content: stripIndents`

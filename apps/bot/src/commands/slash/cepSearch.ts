@@ -10,7 +10,6 @@ import ky from 'ky';
 import { stripIndents } from 'common-tags';
 import { type } from 'arktype';
 import { ExpectedError } from '~/types/errors';
-import { env } from '@repo/env/bot';
 
 const CEP = type('string & /^\\d{5}-?\\d{3}$/');
 
@@ -24,8 +23,8 @@ const Search = type({
   location: {
     type: 'string',
     coordinates: {
-      latitude: 'string.numeric.parse?',
-      longitude: 'string.numeric.parse?',
+      latitude: 'string?',
+      longitude: 'string?',
     },
   },
 });
@@ -54,22 +53,24 @@ export const command = <CommandInfer>{
       .json()
       .then(Search.assert);
 
-    const mapsUrl = new URL('https://www.google.com/maps/search/');
-    mapsUrl.searchParams.append('api', '1');
-    mapsUrl.searchParams.append(
-      'query',
-      !data.location.coordinates.latitude ||
-        !data.location.coordinates.longitude
-        ? `${data.street}, ${data.city}, ${data.state}`
-        : `${data.location.coordinates.latitude},${data?.location.coordinates.longitude}`,
-    );
+    const mapsUrl = new URL('https://www.openstreetmap.org/');
+    const { latitude, longitude } = data.location.coordinates;
+    if (latitude && longitude) {
+      mapsUrl.searchParams.set('mlat', latitude);
+      mapsUrl.searchParams.set('mlon', longitude);
+      mapsUrl.hash = `map=15/${latitude}/${longitude}`;
+    } else {
+      mapsUrl.searchParams.set(
+        'query',
+        `${data.street}, ${data.city}, ${data.state}`,
+      );
+    }
 
     await intr.followUp({
       flags: MessageFlags.IsComponentsV2,
       components: [
         {
           type: ComponentType.Container,
-          accent_color: env.EMBED_COLOR,
           components: [
             {
               type: ComponentType.TextDisplay,
@@ -93,7 +94,7 @@ export const command = <CommandInfer>{
                 {
                   type: ComponentType.Button,
                   style: ButtonStyle.Link,
-                  label: 'Open in Google Maps',
+                  label: 'Open in OpenStreetMap',
                   url: mapsUrl.toString(),
                   emoji: { name: '🌎' },
                 },

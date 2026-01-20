@@ -1,5 +1,5 @@
-import { env } from '@repo/env/bot';
 import {
+  Colors,
   ComponentType,
   MessageFlags,
   type InteractionReplyOptions,
@@ -14,7 +14,7 @@ export class UIBuilder {
       components: [
         {
           type: ComponentType.Container,
-          accent_color: env.EMBED_COLOR,
+          accent_color: Colors.Green,
           components: [
             {
               type: ComponentType.TextDisplay,

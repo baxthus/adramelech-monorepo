@@ -114,7 +114,6 @@ async function animeImage(intr: ChatInputCommandInteraction) {
     components: [
       {
         type: ComponentType.Container,
-        accent_color: env.EMBED_COLOR,
         components: [
           {
             type: ComponentType.MediaGallery,
@@ -149,7 +148,6 @@ async function nekoImage(intr: ChatInputCommandInteraction) {
     components: [
       {
         type: ComponentType.Container,
-        accent_color: env.EMBED_COLOR,
         components: [
           {
             type: ComponentType.MediaGallery,

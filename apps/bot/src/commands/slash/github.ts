@@ -124,7 +124,6 @@ async function repo(intr: ChatInputCommandInteraction) {
   const data = await fetchGitHubData(`/repos/${user}/${repo}`, Repository);
 
   const container = new ContainerBuilder({
-    accent_color: env.EMBED_COLOR,
     components: [
       {
         type: ComponentType.TextDisplay,
@@ -252,7 +251,6 @@ async function user(intr: ChatInputCommandInteraction) {
   }
 
   const container = new ContainerBuilder({
-    accent_color: env.EMBED_COLOR,
     components: [
       {
         type: ComponentType.TextDisplay,
