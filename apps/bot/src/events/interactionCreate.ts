@@ -261,11 +261,14 @@ async function executeInteraction(
   fn: () => Promise<void>,
   intr: Interaction,
 ): Promise<boolean> {
-  const result = await Result.tryPromise(() => fn());
-  if (Result.isOk(result)) return true;
-
-  await handleError(interactionType, name, result.error, intr);
-  return false;
+  // DOn't use Result to preserve error types
+  try {
+    await fn();
+    return true;
+  } catch (error) {
+    await handleError(interactionType, name, error as Error, intr);
+    return false;
+  }
 }
 
 async function handleError(
