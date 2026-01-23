@@ -1,4 +1,4 @@
-import { arktypeResolver } from '@hookform/resolvers/arktype';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, type QueryClient } from '@tanstack/react-query';
 import { Controller, useForm } from 'react-hook-form';
 import { Field, FieldError, FieldGroup } from '@/components/ui/field';
@@ -8,10 +8,10 @@ import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
 import { RotateCcw } from 'lucide-react';
 import { toast } from 'sonner';
-import { type } from 'arktype';
-import type { FeedbackStatusInfer } from '@repo/database/types';
+import type { FeedbackStatus } from '@repo/database/types';
 import { setResponse } from '@/actions/feedbacks';
 import { feedbackFinalStates } from '@/definitions/feedbacks';
+import z from 'zod';
 
 type FeedbackResponseForm = {
   response: string;
@@ -25,14 +25,14 @@ export function FeedbackResponseForm({
 }: {
   queryClient: QueryClient;
   id: string;
-  status: FeedbackStatusInfer;
+  status: FeedbackStatus;
   response: string | null;
 }) {
   const disabled = feedbackFinalStates.includes(status);
 
   const form = useForm<FeedbackResponseForm>({
     disabled,
-    resolver: arktypeResolver(type({ response: 'string > 0' })),
+    resolver: zodResolver(z.object({ response: z.string().nonempty() })),
     defaultValues: {
       response: response || '',
     },

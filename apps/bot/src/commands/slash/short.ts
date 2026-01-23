@@ -5,20 +5,17 @@ import {
   type ChatInputCommandInteraction,
 } from 'discord.js';
 import ky from 'ky';
-import type { CommandInfer } from '~/types/command';
+import type { Command } from '~/types/command';
 import { stripIndents } from 'common-tags';
-import { type } from 'arktype';
 import { ExpectedError } from '~/types/errors';
+import z from 'zod';
 
-const OkResponse = type({
-  shorturl: 'string.url',
-});
+const responseSchema = z.xor([
+  z.object({ shorturl: z.url() }),
+  z.object({ errormessage: z.string() }),
+]);
 
-const ErrorResponse = type({
-  errormessage: 'string',
-});
-
-export const command = <CommandInfer>{
+export const command = <Command>{
   data: new SlashCommandBuilder()
     .setName('short')
     .setDescription('Shorten a URL')
@@ -34,7 +31,7 @@ export const command = <CommandInfer>{
     await intr.deferReply();
 
     const url = intr.options.getString('url', true);
-    if (type('string.url')(url) instanceof type.errors)
+    if (!responseSchema.safeParse({ shorturl: url }).success)
       throw new ExpectedError('Invalid URL');
 
     const data = await ky
@@ -46,12 +43,10 @@ export const command = <CommandInfer>{
       })
       .json()
       .then((json) => {
-        const out = OkResponse(json);
-        if (out instanceof type.errors) {
-          const errOut = ErrorResponse.assert(json);
-          throw new ExpectedError(errOut.errormessage);
-        }
-        return out;
+        const parsed = responseSchema.parse(json);
+        if ('errormessage' in parsed)
+          throw new ExpectedError(parsed.errormessage);
+        return parsed;
       });
 
     await intr.followUp({

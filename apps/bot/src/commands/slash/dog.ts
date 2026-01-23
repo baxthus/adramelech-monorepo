@@ -1,14 +1,14 @@
 import { ComponentType, MessageFlags, SlashCommandBuilder } from 'discord.js';
 import ky from 'ky';
-import type { CommandInfer } from '~/types/command';
-import { type } from 'arktype';
+import z from 'zod';
+import type { Command } from '~/types/command';
 
-const DogImage = type({
-  status: '"success"',
-  message: 'string.url',
+const dogImageSchema = z.object({
+  status: z.literal('success'),
+  message: z.url(),
 });
 
-export const command = <CommandInfer>{
+export const command = <Command>{
   data: new SlashCommandBuilder()
     .setName('dog')
     .setDescription('Get a random dog image'),
@@ -20,7 +20,7 @@ export const command = <CommandInfer>{
     const data = await ky
       .get('https://dog.ceo/api/breeds/image/random')
       .json()
-      .then(DogImage.assert);
+      .then(dogImageSchema.parse);
 
     await intr.followUp({
       flags: MessageFlags.IsComponentsV2,

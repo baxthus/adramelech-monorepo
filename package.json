@@ -2,15 +2,20 @@
   "name": "adramelech",
   "type": "module",
   "private": true,
-  "workspaces": ["apps/*", "packages/*"],
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "scripts": {
-    "build": "turbo run build",
-    "dev": "turbo run dev",
-    "lint": "turbo run lint",
-    "format": "turbo run format",
-    "type-check": "turbo run type-check",
-    "db:push": "turbo run db:push",
-    "db:studio": "turbo run db:studio"
+    "build": "doppler run -- turbo run build",
+    "dev": "doppler run -- turbo run dev",
+    "lint": "doppler run -- turbo run lint",
+    "format": "doppler run -- turbo run format",
+    "type-check": "doppler run -- turbo run type-check",
+    "db:push": "doppler run -- turbo run db:push",
+    "db:studio": "doppler run -- turbo run db:studio",
+    "infra:up": "doppler run -- turbo run infra:up",
+    "infra:down": "doppler run -- turbo run infra:down"
   },
   "devDependencies": {
     "@types/bun": "latest",
@@ -26,7 +31,6 @@
     "unrs-resolver"
   ],
   "dependencies": {
-    "arktype": "^2.1.29",
     "better-result": "^2.0.0",
     "drizzle-orm": "^0.45.1",
     "zod": "^4.3.5"

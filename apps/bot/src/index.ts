@@ -9,19 +9,19 @@ import {
 } from 'discord.js';
 import { loadModules } from '~/loader';
 import logger from '~/logger';
-import type { CommandInfer } from '~/types/command';
-import type { ComponentInfer } from '~/types/component';
-import type { EventInfer } from '~/types/event';
-import type { ModalInfer } from '~/types/modal';
+import type { Command } from '~/types/command';
+import type { Component } from '~/types/component';
+import type { Event } from '~/types/event';
+import type { Modal } from '~/types/modal';
 import registerCommands from '~/utils/registerCommands';
 import { env } from '@repo/env/bot';
 import z from 'zod';
 
 export class CustomClient extends Client {
-  commands: Collection<string, CommandInfer> = new Collection();
-  events: Collection<string, EventInfer> = new Collection();
-  components: Collection<string, ComponentInfer> = new Collection();
-  modals: Collection<string, ModalInfer> = new Collection();
+  commands: Collection<string, Command> = new Collection();
+  events: Collection<string, Event> = new Collection();
+  components: Collection<string, Component> = new Collection();
+  modals: Collection<string, Modal> = new Collection();
 }
 
 export const client = new CustomClient({

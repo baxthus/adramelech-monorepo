@@ -1,15 +1,16 @@
-import type { CommandInfer } from '~/types/command.ts';
+import type { Command } from '~/types/command.ts';
 import { ComponentType, MessageFlags, SlashCommandBuilder } from 'discord.js';
 import ky from 'ky';
-import { type } from 'arktype';
+import z from 'zod';
 
-const CatImages = type({
-  url: 'string.url',
-})
+const catImagesSchema = z
+  .object({
+    url: z.url(),
+  })
   .array()
-  .exactlyLength(1);
+  .length(1);
 
-export const command = <CommandInfer>{
+export const command = <Command>{
   data: new SlashCommandBuilder()
     .setName('cat')
     .setDescription('Get a random cat image'),
@@ -21,7 +22,7 @@ export const command = <CommandInfer>{
     const data = await ky
       .get('https://api.thecatapi.com/v1/images/search')
       .json()
-      .then(CatImages.assert);
+      .then(catImagesSchema.parse);
 
     await intr.followUp({
       flags: MessageFlags.IsComponentsV2,

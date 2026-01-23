@@ -1,13 +1,15 @@
-import { CustomId } from './customId';
-import { Preconditions } from './precondition';
+import { customIdSchema } from './customId';
+import { preconditionSchema } from './precondition';
 import type { ModalSubmitInteraction } from 'discord.js';
-import { type } from 'arktype';
+import z from 'zod';
 
-export const Modal = type({
-  customId: CustomId,
-  cooldown: 'number | boolean ?',
-  preconditions: Preconditions,
-  execute:
-    type('Function').as<(intr: ModalSubmitInteraction) => Promise<void>>(),
+export const modalSchema = z.object({
+  customId: customIdSchema,
+  cooldown: z.union([z.number(), z.boolean()]).optional(),
+  preconditions: preconditionSchema.array().optional(),
+  execute: z.function({
+    input: [z.custom<ModalSubmitInteraction>()],
+    output: z.promise(z.void()),
+  }),
 });
-export type ModalInfer = typeof Modal.infer;
+export type Modal = z.infer<typeof modalSchema>;

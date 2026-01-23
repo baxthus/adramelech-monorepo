@@ -5,23 +5,29 @@ import {
   type ChatInputCommandInteraction,
   type CommandInteraction,
 } from 'discord.js';
-import { Preconditions } from './precondition';
-import { type } from 'arktype';
+import { preconditionSchema } from './precondition';
+import z from 'zod';
 
-export const Command = type({
-  data: type.or(
-    type.instanceOf(SlashCommandBuilder),
-    type.instanceOf(ContextMenuCommandBuilder),
-  ),
-  uses: 'string[]?',
-  cooldown: 'number | boolean ?',
-  preconditions: Preconditions,
-  execute: type('Function').as<(intr: CommandInteraction) => Promise<void>>(),
-  autocomplete: type('Function')
-    .as<(intr: AutocompleteInteraction) => Promise<void>>()
+export const commandSchema = z.object({
+  data: z.union([
+    z.instanceof(SlashCommandBuilder),
+    z.instanceof(ContextMenuCommandBuilder),
+  ]),
+  uses: z.array(z.string()).optional(),
+  cooldown: z.union([z.number(), z.boolean()]).optional(),
+  preconditions: preconditionSchema.array().optional(),
+  execute: z.function({
+    input: [z.custom<CommandInteraction>()],
+    output: z.promise(z.void()),
+  }),
+  autocomplete: z
+    .function({
+      input: [z.custom<AutocompleteInteraction>()],
+      output: z.promise(z.void()),
+    })
     .optional(),
 });
-export type CommandInfer = typeof Command.infer;
+export type Command = z.infer<typeof commandSchema>;
 
 export type SubcommandExecutor = (
   intr: ChatInputCommandInteraction,

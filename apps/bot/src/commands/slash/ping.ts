@@ -4,8 +4,8 @@ import {
   MessageFlags,
   SlashCommandBuilder,
 } from 'discord.js';
-import type { CommandInfer } from '~/types/command';
-import type { ComponentInfer } from '~/types/component';
+import type { Command } from '~/types/command';
+import type { Component } from '~/types/component';
 import { stripIndents } from 'common-tags';
 import { env } from '@repo/env/bot';
 
@@ -28,7 +28,7 @@ const createActionRow = (disabled: boolean = false) => ({
   ],
 });
 
-export const command = <CommandInfer>{
+export const command = <Command>{
   data: new SlashCommandBuilder()
     .setName('ping')
     .setDescription('Replies with Pong!'),
@@ -52,7 +52,7 @@ export const command = <CommandInfer>{
   },
 };
 
-export const component = <ComponentInfer>{
+export const component = <Component>{
   customId: 'button-latency',
   type: ComponentType.Button,
   async execute(intr) {

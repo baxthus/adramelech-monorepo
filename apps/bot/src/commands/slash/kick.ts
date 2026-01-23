@@ -8,12 +8,12 @@ import {
   userMention,
   type ChatInputCommandInteraction,
 } from 'discord.js';
-import type { CommandInfer } from '~/types/command';
+import type { Command } from '~/types/command';
 import { stripIndents } from 'common-tags';
 import { ExpectedError } from '~/types/errors';
 import { Result } from 'better-result';
 
-export const command = <CommandInfer>{
+export const command = <Command>{
   data: new SlashCommandBuilder()
     .setName('kick')
     .setDescription('Kick a member')

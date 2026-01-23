@@ -4,9 +4,9 @@ import {
   SlashCommandBuilder,
   type ChatInputCommandInteraction,
 } from 'discord.js';
-import type { CommandInfer } from '~/types/command';
+import type { Command } from '~/types/command';
 
-export const command = <CommandInfer>{
+export const command = <Command>{
   data: new SlashCommandBuilder()
     .setName('dice')
     .setDescription('Roll a dice')

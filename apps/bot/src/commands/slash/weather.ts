@@ -1,5 +1,4 @@
 import { env } from '@repo/env/bot';
-import { type } from 'arktype';
 import { stripIndents } from 'common-tags';
 import {
   ButtonStyle,
@@ -9,46 +8,51 @@ import {
   type ChatInputCommandInteraction,
 } from 'discord.js';
 import ky from 'ky';
-import type { CommandInfer } from '~/types/command';
+import { capitalize } from 'voca';
+import z from 'zod';
+import type { Command } from '~/types/command';
 import { ExpectedError } from '~/types/errors';
 
 const BASE_URL = 'https://api.openweathermap.org';
 
-const Geos = type({
-  lat: 'number',
-  lon: 'number',
-}).array();
-
-const Weather = type({
-  id: 'number',
-  name: 'string | null',
-  weather: type({
-    main: 'string',
-    description: 'string.capitalize',
+const geosSchema = z
+  .object({
+    lat: z.number(),
+    lon: z.number(),
   })
+  .array();
+
+const weatherSchema = z.object({
+  id: z.number(),
+  name: z.string().nullable(),
+  weather: z
+    .object({
+      main: z.string(),
+      description: z.string().transform((v) => capitalize(v)),
+    })
     .array()
-    .exactlyLength(1),
-  main: {
-    temp: 'number',
-    feels_like: 'number',
-    temp_min: 'number',
-    temp_max: 'number',
-    pressure: 'number',
-    humidity: 'number',
-    sea_level: 'number',
-    grnd_level: 'number',
-  },
-  wind: {
-    speed: 'number',
-    deg: 'number',
-    gust: 'number | null',
-  },
-  sys: {
-    country: 'string == 2 |> string.lower',
-  },
+    .length(1),
+  main: z.object({
+    temp: z.number(),
+    feels_like: z.number(),
+    temp_min: z.number(),
+    temp_max: z.number(),
+    pressure: z.number(),
+    humidity: z.number(),
+    sea_level: z.number(),
+    grnd_level: z.number(),
+  }),
+  wind: z.object({
+    speed: z.number(),
+    deg: z.number(),
+    gust: z.number().nullable(),
+  }),
+  sys: z.object({
+    country: z.string().length(2).toLowerCase(),
+  }),
 });
 
-export const command = <CommandInfer>{
+export const command = <Command>{
   data: new SlashCommandBuilder()
     .setName('weather')
     .setDescription('Get the current weather for a location')
@@ -85,7 +89,7 @@ export const command = <CommandInfer>{
       })
       .json()
       .then((json) => {
-        const data = Geos.assert(json);
+        const data = geosSchema.parse(json);
         if (data.length === 0)
           throw new ExpectedError(
             `Could not find location for city "${city}" in country "${country}".`,
@@ -104,7 +108,8 @@ export const command = <CommandInfer>{
         },
       })
       .json()
-      .then(Weather.assert);
+      .then(weatherSchema.parse);
+    console.log(weather);
 
     await intr.followUp({
       flags: MessageFlags.IsComponentsV2,

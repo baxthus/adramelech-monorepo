@@ -6,9 +6,9 @@ import {
 } from 'discord.js';
 import type { CustomClient } from '~/index';
 import UnicodeSheet from '~/tools/UnicodeSheet';
-import type { CommandInfer } from '~/types/command';
+import type { Command } from '~/types/command';
 
-export const command = <CommandInfer>{
+export const command = <Command>{
   data: new SlashCommandBuilder()
     .setName('credits')
     .setDescription('List of all external APIs used by the bot')

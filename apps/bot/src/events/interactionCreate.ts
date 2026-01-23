@@ -14,10 +14,10 @@ import {
 import logger from '~/logger';
 import { sendError } from '~/utils/sendError';
 import type { CustomClient } from '..';
-import type { CommandInfer } from '~/types/command';
-import type { ComponentInfer } from '~/types/component';
-import type { ModalInfer } from '~/types/modal';
-import type { EventInfer } from '~/types/event';
+import type { Command } from '~/types/command';
+import type { Component } from '~/types/component';
+import type { Modal } from '~/types/modal';
+import type { Event } from '~/types/event';
 import redis from '@repo/redis';
 import { formatDistanceToNow } from 'date-fns';
 import { ExpectedError } from '~/types/errors';
@@ -37,7 +37,7 @@ export type CommandInteraction =
   | PrimaryEntryPointCommandInteraction; // Don't know what this is
 export type ComponentInteraction = AnySelectMenuInteraction | ButtonInteraction;
 
-export const event = <EventInfer>{
+export const event = <Event>{
   name: Events.InteractionCreate,
   async execute(intr: Interaction) {
     const client = intr.client as CustomClient;
@@ -191,7 +191,7 @@ async function handlePreconditions(
     | ComponentInteraction
     | ModalSubmitInteraction
     | AutocompleteInteraction,
-  item: CommandInfer | ComponentInfer | ModalInfer,
+  item: Command | Component | Modal,
 ): Promise<boolean> {
   const identification =
     'commandName' in intr ? intr.commandName : intr.customId;
@@ -212,7 +212,7 @@ async function handlePreconditions(
 
 async function isOnCooldown(
   intr: Interaction,
-  item: CommandInfer | ComponentInfer | ModalInfer,
+  item: Command | Component | Modal,
   name: string,
 ): Promise<boolean> {
   if (!item.cooldown || Bun.env.NODE_ENV === 'development') return false;

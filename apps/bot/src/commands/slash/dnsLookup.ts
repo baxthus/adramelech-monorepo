@@ -6,7 +6,7 @@ import {
 } from 'discord.js';
 import ky from 'ky';
 import UnicodeSheet from '~/tools/UnicodeSheet';
-import type { CommandInfer } from '~/types/command';
+import type { Command } from '~/types/command';
 import { ExpectedError } from '~/types/errors';
 
 type DnsRecord = {
@@ -15,7 +15,7 @@ type DnsRecord = {
   content: string;
 };
 
-export const command = <CommandInfer>{
+export const command = <Command>{
   data: new SlashCommandBuilder()
     .setName('dns-lookup')
     .setDescription("Lookup a domain's DNS records")

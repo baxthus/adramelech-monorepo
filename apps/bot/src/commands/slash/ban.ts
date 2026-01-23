@@ -1,4 +1,4 @@
-import type { CommandInfer } from '~/types/command.ts';
+import type { Command } from '~/types/command.ts';
 import {
   type ChatInputCommandInteraction,
   Colors,
@@ -13,7 +13,7 @@ import { stripIndents } from 'common-tags';
 import { ExpectedError } from '~/types/errors';
 import { Result } from 'better-result';
 
-export const command = <CommandInfer>{
+export const command = <Command>{
   data: new SlashCommandBuilder()
     .setName('ban')
     .setDescription('Ban a member')

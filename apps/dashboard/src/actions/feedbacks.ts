@@ -2,27 +2,26 @@
 
 import { protect } from '@/utils/auth';
 import { desc, eq, ilike, or, type SQL } from 'drizzle-orm';
-import { NanoID } from '@repo/utils/types';
-import { type } from 'arktype';
-import { FeedbackStatus } from '@repo/database/validations';
+import { feedbackStatusSchema } from '@repo/database/validations';
 import { feedbacks } from '@repo/database/schema';
-import type { FeedbackStatusInfer } from '@repo/database/types';
+import type { FeedbackStatus } from '@repo/database/types';
 import { db } from '@repo/database';
-import { DefaultGetActions, pageSize } from '@/definitions/actions';
+import { defaultGetActionSchema, pageSize } from '@/definitions/actions';
 import {
   feedbackFinalStates,
   statusTransitions,
 } from '@/definitions/feedbacks';
+import z from 'zod';
 
 export async function getFeedbacks(search?: string, page?: number) {
   await protect();
 
-  const parsed = DefaultGetActions.assert({ search, page });
+  const parsed = defaultGetActionSchema.parse({ search, page });
 
   let where: SQL | undefined;
   if (parsed.search) {
-    const isNanoId = !(NanoID(parsed.search) instanceof type.errors);
-    const isStatus = !(FeedbackStatus(parsed.search) instanceof type.errors);
+    const isNanoId = z.nanoid().safeParse(parsed.search).success;
+    const isStatus = feedbackStatusSchema.safeParse(parsed.search).success;
 
     if (isNanoId)
       where = or(
@@ -30,7 +29,7 @@ export async function getFeedbacks(search?: string, page?: number) {
         eq(feedbacks.profileId, parsed.search),
       );
     else if (isStatus)
-      where = eq(feedbacks.status, parsed.search as FeedbackStatusInfer);
+      where = eq(feedbacks.status, parsed.search as FeedbackStatus);
     else where = ilike(feedbacks.title, `%${parsed.search}%`);
   }
 
@@ -58,7 +57,7 @@ export async function getFeedbacks(search?: string, page?: number) {
 export async function getFeedback(id: string) {
   await protect();
 
-  NanoID.assert(id);
+  z.nanoid().parse(id);
 
   const feedback = await db.query.feedbacks.findFirst({
     where: eq(feedbacks.id, id),
@@ -68,11 +67,11 @@ export async function getFeedback(id: string) {
   return feedback;
 }
 
-export async function setStatus(id: string, status: FeedbackStatusInfer) {
+export async function setStatus(id: string, status: FeedbackStatus) {
   await protect();
 
-  NanoID.assert(id);
-  FeedbackStatus.assert(status);
+  z.nanoid().parse(id);
+  feedbackStatusSchema.parse(status);
 
   const feedback = await db.query.feedbacks.findFirst({
     columns: { status: true },
@@ -95,8 +94,8 @@ export async function setStatus(id: string, status: FeedbackStatusInfer) {
 export async function setResponse(id: string, response: string) {
   await protect();
 
-  NanoID.assert(id);
-  type('string > 0').assert(response);
+  z.nanoid().parse(id);
+  z.string().min(1).parse(response);
 
   const feedback = await db.query.feedbacks.findFirst({
     columns: { status: true },
@@ -116,7 +115,7 @@ export async function setResponse(id: string, response: string) {
 export async function deleteFeedback(id: string) {
   await protect();
 
-  NanoID.assert(id);
+  z.nanoid().parse(id);
 
   await db.delete(feedbacks).where(eq(feedbacks.id, id));
 }

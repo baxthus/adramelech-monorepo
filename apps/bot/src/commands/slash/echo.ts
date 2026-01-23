@@ -7,12 +7,12 @@ import {
   MessageFlags,
   userMention,
 } from 'discord.js';
-import type { CommandInfer } from '~/types/command';
-import type { ModalInfer } from '~/types/modal';
+import type { Command } from '~/types/command';
+import type { Modal } from '~/types/modal';
 import { UIBuilder } from '~/services/UIBuilder';
 import { ExpectedError } from '~/types/errors';
 
-export const command = <CommandInfer>{
+export const command = <Command>{
   data: new SlashCommandBuilder()
     .setName('echo')
     .setDescription('Echoes a message')
@@ -38,7 +38,7 @@ export const command = <CommandInfer>{
   },
 };
 
-export const modal = <ModalInfer>{
+export const modal = <Modal>{
   customId: 'modal-echo',
   async execute(intr) {
     const message = intr.fields.getTextInputValue('message');

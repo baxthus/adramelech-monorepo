@@ -30,10 +30,10 @@ packages/
 - **Naming**: camelCase files, PascalCase components/types, camelCase functions
 
 ## Patterns
-- **Error handling**: Throw `ExpectedError` for expected user-facing errors, `Error` for unexpected issues (e.g., database failures). The event handler catches and distinguishes between error types. Arktype for validation, better-result for error handling
+- **Error handling**: Throw `ExpectedError` for expected user-facing errors, `Error` for unexpected issues (e.g., database failures). The event handler catches and distinguishes between error types. Zod for validation, better-result for error handling
 - **Bot exports**: `export const command = <Command>{...}`, same for `event`, `component`
 - **Dashboard**: Server Actions with `'use server'`, `cn()` for class merging, React Compiler enabled
-- **Database**: Drizzle ORM with NanoID keys, schema in `packages/database/src/schema.ts`, Arktype validations in `packages/database/src/validations.ts`
+- **Database**: Drizzle ORM with NanoID keys, schema in `packages/database/src/schema.ts`, Zod validations in `packages/database/src/validations.ts`
 - **Redis**: Bun's native `RedisClient`, import via `import redis from '@repo/redis'`, utils via `import { fn } from '@repo/redis/utils'`
 - **Utils**: Shared utilities, import via `import { fn } from '@repo/utils/module'`
 

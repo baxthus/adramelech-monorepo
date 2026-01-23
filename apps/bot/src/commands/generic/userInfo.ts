@@ -17,11 +17,11 @@ import {
   type User,
   type UserContextMenuCommandInteraction,
 } from 'discord.js';
-import type { CommandInfer } from '~/types/command';
+import type { Command } from '~/types/command';
 import { stripIndents } from 'common-tags';
 import { toUnixTimestamp } from '@repo/utils/date';
 
-export const commands = <Array<CommandInfer>>[
+export const commands = <Array<Command>>[
   {
     data: new SlashCommandBuilder()
       .setName('user-info')

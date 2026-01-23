@@ -1,7 +1,6 @@
 import DashboardInset from '@/components/dashboard/inset';
 import Alert from '@/components/alert';
-import { ArkErrors } from 'arktype';
-import { NanoID } from '@repo/utils/types';
+import z from 'zod';
 
 export default async function FeedbackLayout({
   params,
@@ -11,7 +10,7 @@ export default async function FeedbackLayout({
   children: React.ReactNode;
 }) {
   const { id } = await params;
-  const isValid = !(NanoID(id) instanceof ArkErrors);
+  const isValid = z.nanoid().safeParse(id).success;
 
   return (
     <DashboardInset

@@ -6,11 +6,11 @@ import {
   time,
   TimestampStyles,
 } from 'discord.js';
-import type { CommandInfer } from '~/types/command';
+import type { Command } from '~/types/command';
 import { stripIndents } from 'common-tags';
 import { toUnixTimestamp } from '@repo/utils/date';
 
-export const command = <CommandInfer>{
+export const command = <Command>{
   data: new SlashCommandBuilder()
     .setName('server')
     .setDescription('Replies with server information')

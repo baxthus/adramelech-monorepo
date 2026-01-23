@@ -1,14 +1,16 @@
-import { CustomId } from './customId';
+import { customIdSchema } from './customId';
 import { ComponentType, type MessageComponentInteraction } from 'discord.js';
-import { Preconditions } from './precondition';
-import { type } from 'arktype';
+import { preconditionSchema } from './precondition';
+import z from 'zod';
 
-export const Component = type({
-  customId: CustomId,
-  type: type.valueOf(ComponentType),
-  cooldown: 'number | boolean ?',
-  preconditions: Preconditions,
-  execute:
-    type('Function').as<(intr: MessageComponentInteraction) => Promise<void>>(),
+export const componentSchema = z.object({
+  customId: customIdSchema,
+  type: z.enum(ComponentType),
+  cooldown: z.union([z.number(), z.boolean()]).optional(),
+  preconditions: preconditionSchema.array().optional(),
+  execute: z.function({
+    input: [z.custom<MessageComponentInteraction>()],
+    output: z.promise(z.void()),
+  }),
 });
-export type ComponentInfer = typeof Component.infer;
+export type Component = z.infer<typeof componentSchema>;

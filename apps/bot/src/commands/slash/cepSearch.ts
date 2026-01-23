@@ -1,4 +1,4 @@
-import type { CommandInfer } from '~/types/command.ts';
+import type { Command } from '~/types/command.ts';
 import {
   ButtonStyle,
   type ChatInputCommandInteraction,
@@ -8,28 +8,28 @@ import {
 } from 'discord.js';
 import ky from 'ky';
 import { stripIndents } from 'common-tags';
-import { type } from 'arktype';
 import { ExpectedError } from '~/types/errors';
+import z from 'zod';
 
-const CEP = type('string & /^\\d{5}-?\\d{3}$/');
+const cepSchema = z.string().regex(/^\d{5}-?\d{3}$/);
 
-const Search = type({
-  cep: CEP,
-  state: 'string == 2',
-  city: 'string',
-  neighborhood: 'string',
-  street: 'string',
-  service: 'string',
-  location: {
-    type: 'string',
-    coordinates: {
-      latitude: 'string?',
-      longitude: 'string?',
-    },
-  },
+const searchSchema = z.object({
+  cep: cepSchema,
+  state: z.string().length(2),
+  city: z.string(),
+  neighborhood: z.string(),
+  street: z.string(),
+  service: z.string(),
+  location: z.object({
+    type: z.string(),
+    coordinates: z.object({
+      latitude: z.string().optional(),
+      longitude: z.string().optional(),
+    }),
+  }),
 });
 
-export const command = <CommandInfer>{
+export const command = <Command>{
   data: new SlashCommandBuilder()
     .setName('cep-search')
     .setDescription('Search for a CEP (Brazilian ZIP code)')
@@ -45,13 +45,13 @@ export const command = <CommandInfer>{
     await intr.deferReply();
     const cep = intr.options.getString('cep', true);
 
-    if (CEP(cep) instanceof type.errors)
+    if (!cepSchema.safeParse(cep).success)
       throw new ExpectedError('Invalid CEP format');
 
     const data = await ky
       .get(`https://brasilapi.com.br/api/cep/v2/${cep}`)
       .json()
-      .then(Search.assert);
+      .then(searchSchema.parse);
 
     const mapsUrl = new URL('https://www.openstreetmap.org/');
     const { latitude, longitude } = data.location.coordinates;

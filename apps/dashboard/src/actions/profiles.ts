@@ -1,24 +1,25 @@
 'use server';
 
-import { DefaultGetActions, pageSize } from '@/definitions/actions';
+import { defaultGetActionSchema, pageSize } from '@/definitions/actions';
 import { protect } from '@/utils/auth';
-import { type } from 'arktype';
 import { db } from '@repo/database';
 import { profiles } from '@repo/database/schema';
 import { desc, eq, ilike, or, type SQL } from 'drizzle-orm';
-import { NanoID } from '@repo/utils/types';
+import z from 'zod';
 
 export async function getProfiles(search?: string, page?: number) {
   await protect();
 
-  const parsed = DefaultGetActions.assert({ search, page });
+  const parsed = defaultGetActionSchema.parse({ search, page });
 
   let where: SQL | undefined;
   if (parsed.search) {
-    const isNanoId = !(NanoID(parsed.search) instanceof type.errors);
-    const isDiscordId = !(
-      type('17 <= string <= 19')(parsed.search) instanceof type.errors
-    );
+    const isNanoId = z.nanoid().safeParse(parsed.search).success;
+    const isDiscordId = z
+      .string()
+      .min(17)
+      .max(19)
+      .safeParse(parsed.search).success;
 
     if (isNanoId) where = eq(profiles.id, parsed.search);
     else if (isDiscordId) where = eq(profiles.discordId, parsed.search);
@@ -52,7 +53,7 @@ export async function getProfiles(search?: string, page?: number) {
 export async function deleteProfile(id: string) {
   await protect();
 
-  NanoID.assert(id);
+  z.nanoid().parse(id);
 
   const result = await db.delete(profiles).where(eq(profiles.id, id));
   if (!result.rowCount) throw new Error('Profile not found');

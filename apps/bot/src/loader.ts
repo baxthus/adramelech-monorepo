@@ -3,11 +3,10 @@ import logger from '~/logger';
 import type { ClientEvents } from 'discord.js';
 import path from 'path';
 import findRecursively from '~/utils/findRecursively';
-import { Command } from './types/command';
-import { Event } from './types/event';
-import { Component } from './types/component';
-import { Modal } from './types/modal';
-import { ArkErrors } from 'arktype';
+import { commandSchema } from './types/command';
+import { eventSchema } from './types/event';
+import { componentSchema } from './types/component';
+import { modalSchema } from './types/modal';
 
 // Be aware that this way of doing things allows for loading anything from any folder
 // Please respect the structure of the folders
@@ -16,29 +15,28 @@ import { ArkErrors } from 'arktype';
 const FOLDERS_TO_LOAD = ['commands', 'events'];
 
 const EXPORT_TYPES = {
-  command: { singular: 'command', plural: 'commands', schema: Command },
-  event: { singular: 'event', plural: 'events', schema: Event },
+  command: { singular: 'command', plural: 'commands' },
+  event: { singular: 'event', plural: 'events' },
   component: {
     singular: 'component',
     plural: 'components',
-    schema: Component,
   },
-  modal: { singular: 'modal', plural: 'modals', schema: Modal },
+  modal: { singular: 'modal', plural: 'modals' },
 } as const;
 
 function addCommand(client: CustomClient, rawCommand: unknown, file: string) {
   if (rawCommand === null) return;
-  const command = Command(rawCommand);
-  if (command instanceof ArkErrors) {
-    logger.error(`Invalid command file: ${file}`, command.summary);
+  const command = commandSchema.safeParse(rawCommand);
+  if (!command.success) {
+    logger.error(`Invalid command file: ${file}`, command.error.message);
     return;
   }
-  if (client.commands.has(command.data.name)) {
+  if (client.commands.has(command.data.data.name)) {
     logger.error(
-      `Duplicate command name ${command.data.name} in ${file}. Overwriting`,
+      `Duplicate command name ${command.data.data.name} in ${file}. Overwriting`,
     );
   }
-  client.commands.set(command.data.name, command);
+  client.commands.set(command.data.data.name, command.data);
 }
 
 function registerEvent(
@@ -48,17 +46,17 @@ function registerEvent(
   file: string,
 ): void {
   if (rawEvent === null) return;
-  const event = Event(rawEvent);
-  if (event instanceof ArkErrors) {
-    logger.error(`Invalid event file: ${file}`, event.summary);
+  const event = eventSchema.safeParse(rawEvent);
+  if (!event.success) {
+    logger.error(`Invalid event file: ${file}`, event.error.message);
     return;
   }
   // Use rawEvent so we bypass the type check
   const eventHandler = (...args: unknown[]) => rawEvent.execute(...args);
-  if (event.once) {
-    client.once(event.name as keyof ClientEvents, eventHandler);
+  if (event.data.once) {
+    client.once(event.data.name as keyof ClientEvents, eventHandler);
   } else {
-    client.on(event.name as keyof ClientEvents, eventHandler);
+    client.on(event.data.name as keyof ClientEvents, eventHandler);
   }
 }
 
@@ -68,32 +66,32 @@ function addComponent(
   file: string,
 ) {
   if (rawComponent === null) return;
-  const component = Component(rawComponent);
-  if (component instanceof ArkErrors) {
-    logger.error(`Invalid component file: ${file}`, component.summary);
+  const component = componentSchema.safeParse(rawComponent);
+  if (!component.success) {
+    logger.error(`Invalid component file: ${file}`, component.error.message);
     return;
   }
-  if (client.components.has(component.customId)) {
+  if (client.components.has(component.data.customId)) {
     logger.error(
-      `Duplicate component id ${component.customId} in ${file}. Overwriting`,
+      `Duplicate component id ${component.data.customId} in ${file}. Overwriting`,
     );
   }
-  client.components.set(component.customId, component);
+  client.components.set(component.data.customId, component.data);
 }
 
 function addModal(client: CustomClient, rawModal: unknown, file: string) {
   if (rawModal === null) return;
-  const modal = Modal(rawModal);
-  if (modal instanceof ArkErrors) {
-    logger.error(`Invalid modal file: ${file}`, modal.summary);
+  const modal = modalSchema.safeParse(rawModal);
+  if (!modal.success) {
+    logger.error(`Invalid modal file: ${file}`, modal.error.message);
     return;
   }
-  if (client.modals.has(modal.customId)) {
+  if (client.modals.has(modal.data.customId)) {
     logger.error(
-      `Duplicate modal id ${modal.customId} in ${file}. Overwriting`,
+      `Duplicate modal id ${modal.data.customId} in ${file}. Overwriting`,
     );
   }
-  client.modals.set(modal.customId, modal);
+  client.modals.set(modal.data.customId, modal.data);
 }
 
 export async function loadModules(client: CustomClient) {

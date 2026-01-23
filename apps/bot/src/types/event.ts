@@ -1,16 +1,17 @@
-import { type } from 'arktype';
 import {
   Events,
   type Message,
   type Client,
   type Interaction,
 } from 'discord.js';
+import z from 'zod';
 
-type UnifiedEvent = Client | Interaction | Message;
-
-export const Event = type({
-  name: type.valueOf(Events),
-  once: 'boolean?',
-  execute: type('Function').as<(arg: UnifiedEvent) => Promise<void>>(),
+export const eventSchema = z.object({
+  name: z.enum(Events),
+  once: z.boolean().optional(),
+  execute: z.function({
+    input: [z.custom<Client | Interaction | Message>()],
+    output: z.promise(z.void()),
+  }),
 });
-export type EventInfer = typeof Event.infer;
+export type Event = z.infer<typeof eventSchema>;

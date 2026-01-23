@@ -5,7 +5,7 @@ import {
   type ChatInputCommandInteraction,
 } from 'discord.js';
 import ky from 'ky';
-import type { CommandInfer } from '~/types/command';
+import type { Command } from '~/types/command';
 import { stripIndents } from 'common-tags';
 import { ExpectedError } from '~/types/errors';
 
@@ -21,7 +21,7 @@ const badResponses = [
   'Closing connection',
 ];
 
-export const command = <CommandInfer>{
+export const command = <Command>{
   data: new SlashCommandBuilder()
     .setName('whois')
     .setDescription('Get information about a domain or IP address')

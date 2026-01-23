@@ -1,5 +1,5 @@
 import { ActivityType, Events, version } from 'discord.js';
-import type { EventInfer } from '~/types/event';
+import type { Event } from '~/types/event';
 import type { CustomClient } from '~';
 import logger from '~/logger';
 import kleur from 'kleur';
@@ -7,7 +7,7 @@ import { testConnection as dbTestConnection } from '@repo/database/utils';
 import { testConnection as redisTestConnection } from '@repo/redis/utils';
 import { Result } from 'better-result';
 
-export const event = <EventInfer>{
+export const event = <Event>{
   name: Events.ClientReady,
   once: true,
   async execute(client: CustomClient) {

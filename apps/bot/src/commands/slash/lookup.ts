@@ -3,42 +3,39 @@ import {
   ComponentType,
   MessageFlags,
   SlashCommandBuilder,
-  time,
-  TimestampStyles,
   type ChatInputCommandInteraction,
 } from 'discord.js';
 import ky from 'ky';
-import type { CommandInfer } from '~/types/command';
+import type { Command } from '~/types/command';
 import { stripIndents } from 'common-tags';
-import { type } from 'arktype';
-import { toUnixTimestamp } from '@repo/utils/date';
 import { ExpectedError } from '~/types/errors';
+import z from 'zod';
 
-const Lookup = type({
-  success: 'boolean',
-  type: '"IPv4" | "IPv6"',
-  continent: 'string',
-  country: 'string',
-  country_code: 'string == 2',
-  region: 'string',
-  city: 'string',
-  latitude: type('number').pipe(String),
-  longitude: type('number').pipe(String),
-  postal: 'string',
-  connection: {
-    asn: 'number',
-    org: 'string',
-    isp: 'string',
-    domain: 'string',
-  },
-  timezone: {
-    id: 'string',
-    utc: 'string',
-    current_time: 'string.date.parse',
-  },
+const lookupSchema = z.object({
+  success: z.boolean(),
+  type: z.enum(['IPv4', 'IPv6']),
+  continent: z.string(),
+  country: z.string(),
+  country_code: z.string().length(2),
+  region: z.string(),
+  city: z.string(),
+  latitude: z.coerce.string(),
+  longitude: z.coerce.string(),
+  postal: z.string(),
+  connection: z.object({
+    asn: z.number(),
+    org: z.string(),
+    isp: z.string(),
+    domain: z.string(),
+  }),
+  timezone: z.object({
+    id: z.string(),
+    utc: z.string(),
+    current_time: z.coerce.date(),
+  }),
 });
 
-export const command = <CommandInfer>{
+export const command = <Command>{
   data: new SlashCommandBuilder()
     .setName('lookup')
     .setDescription('Lookup a domain or IP address')
@@ -55,15 +52,14 @@ export const command = <CommandInfer>{
 
     const target = intr.options.getString('target', true);
 
-    const ip =
-      type('string.ip')(target) instanceof type.errors
-        ? await getIpFromDomain(target)
-        : target;
+    const ip = z.union([z.ipv4(), z.ipv6()]).safeParse(target).success
+      ? target
+      : await getIpFromDomain(target);
 
     const data = await ky
       .get(`https://ipwho.is/${ip}`)
       .json()
-      .then(Lookup.assert);
+      .then(lookupSchema.parse);
 
     const mapsUrl = new URL('https://www.openstreetmap.org/');
     mapsUrl.searchParams.set('mlat', data.latitude);
@@ -129,7 +125,12 @@ export const command = <CommandInfer>{
               ## Timezone
               **ID:** ${data.timezone.id}
               **UTC:** ${data.timezone.utc}
-              **Current Time:** ${time(toUnixTimestamp(data.timezone.current_time), TimestampStyles.ShortDateTime)}
+              **Current Time:** ${data.timezone.current_time.toLocaleString(
+                'en-CA',
+                {
+                  timeZone: data.timezone.id,
+                },
+              )}
               `,
             },
             {

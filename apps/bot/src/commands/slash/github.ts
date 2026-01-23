@@ -12,66 +12,71 @@ import v from 'voca';
 import {
   executeCommandFromTree,
   type CommandExecutors,
-  type CommandInfer,
+  type Command,
 } from '~/types/command';
 import { stripIndents } from 'common-tags';
-import { type, type Type } from 'arktype';
 import { env } from '@repo/env/bot';
+import z from 'zod';
+import { capitalize } from '@repo/utils/text';
 
 const BASE_URL = 'https://api.github.com';
 
-const Repository = type({
-  id: 'number',
-  name: 'string',
-  html_url: 'string.url',
-  description: 'string | null',
-  fork: 'boolean',
-  language: 'string | null',
-  stargazers_count: 'number',
-  watchers_count: 'number',
-  forks_count: 'number',
-  owner: {
-    id: 'number',
-    login: 'string',
-    type: 'string',
-    avatar_url: 'string.url',
-  },
-  license: type({
-    key: 'string',
-  }).or('null'),
+const repositorySchema = z.object({
+  id: z.number(),
+  name: z.string(),
+  html_url: z.url(),
+  description: z.string().nullable(),
+  fork: z.boolean(),
+  language: z.string().nullable(),
+  stargazers_count: z.number(),
+  watchers_count: z.number(),
+  forks_count: z.number(),
+  owner: z.object({
+    id: z.number(),
+    login: z.string(),
+    type: z.string(),
+    avatar_url: z.url(),
+  }),
+  license: z
+    .object({
+      key: z.string(),
+    })
+    .nullable(),
 });
 
-const License = type({
-  name: 'string.capitalize',
-  html_url: 'string.url',
-  permissions: 'string[]',
-  conditions: 'string[]',
-  limitations: 'string[]',
+const licenseSchema = z.object({
+  name: z.string().transform((str) => capitalize(str)),
+  html_url: z.url(),
+  permissions: z.array(z.string()),
+  conditions: z.array(z.string()),
+  limitations: z.array(z.string()),
 });
 
-const User = type({
-  id: 'number',
-  login: 'string',
-  type: 'string',
-  name: 'string | null',
-  company: 'string | null',
-  blog: 'string | null',
-  location: 'string | null',
-  bio: 'string | null',
-  public_repos: 'number',
-  public_gists: 'number',
-  followers: 'number',
-  following: 'number',
-  avatar_url: 'string.url',
-  html_url: 'string.url',
+const userSchema = z.object({
+  id: z.number(),
+  login: z.string(),
+  type: z.string(),
+  name: z.string().nullable(),
+  company: z.string().nullable(),
+  blog: z.string().nullable(),
+  location: z.string().nullable(),
+  bio: z.string().nullable(),
+  public_repos: z.number(),
+  public_gists: z.number(),
+  followers: z.number(),
+  following: z.number(),
+  avatar_url: z.url(),
+  html_url: z.url(),
 });
 
-const Socials = type({
-  provider: 'string.capitalize',
-  url: 'string.url',
-}).array();
+const socialsSchema = z
+  .object({
+    provider: z.string().transform((str) => capitalize(str)),
+    url: z.url(),
+  })
+  .array();
 
-export const command = <CommandInfer>{
+export const command = <Command>{
   data: new SlashCommandBuilder()
     .setName('github')
     .setDescription('Get GitHub information')
@@ -121,7 +126,10 @@ async function repo(intr: ChatInputCommandInteraction) {
   const user = intr.options.getString('user', true);
   const repo = intr.options.getString('repo', true);
 
-  const data = await fetchGitHubData(`/repos/${user}/${repo}`, Repository);
+  const data = await fetchGitHubData(
+    `/repos/${user}/${repo}`,
+    repositorySchema,
+  );
 
   const container = new ContainerBuilder({
     components: [
@@ -226,8 +234,8 @@ async function user(intr: ChatInputCommandInteraction) {
   const username = intr.options.getString('user', true);
 
   const [user, socials] = await Promise.all([
-    fetchGitHubData(`/users/${username}`, User),
-    fetchGitHubData(`/users/${username}/social_accounts`, Socials),
+    fetchGitHubData(`/users/${username}`, userSchema),
+    fetchGitHubData(`/users/${username}/social_accounts`, socialsSchema),
   ]);
 
   const userActionRow: APIComponentInMessageActionRow[] = [
@@ -323,23 +331,23 @@ async function user(intr: ChatInputCommandInteraction) {
   });
 }
 
-const fetchGitHubData = <T extends Type>(
+const fetchGitHubData = <T extends z.ZodType>(
   endpoint: string,
   schema: T,
-): Promise<T['infer']> =>
+): Promise<z.output<T>> =>
   ky
     .get(BASE_URL + endpoint, {
       headers: { 'User-Agent': env.USER_AGENT },
     })
     .json()
-    .then(schema.assert);
+    .then(schema.parse);
 
 async function getLicenseInfo(key: string): Promise<{
   content: string;
   html_url: string;
 }> {
   if (key === 'other') return { content: 'Other', html_url: '' };
-  return fetchGitHubData(`/licenses/${key}`, License).then((result) => ({
+  return fetchGitHubData(`/licenses/${key}`, licenseSchema).then((result) => ({
     content: stripIndents`
       **Name:** ${result.name}
       **Permissions:** ${result.permissions.join(', ')}
